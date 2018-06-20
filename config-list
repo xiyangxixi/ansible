@@ -1,1 +1,32 @@
+# 关于/etc/ansible/hosts的配置，有很多中写法，最好用yaml
+#[hosts]
+#192.168.29.250
+#192.168.29.252
+#[A]
+#192.168.29.250
+#[B]
+#192.168.29.252
+#[C:children]
+#A
+#B
 
+#all:
+# hosts:
+#  192.168.29.250:
+# children:
+#  test1:
+#   hosts:
+#    192.168.29.252:
+#  test2:
+#   hosts:
+#    192.168.29.250:
+all:
+ children:
+  pro:
+   children:
+    pro1:
+     hosts:
+      192.168.29.250:
+    pro2:
+     hosts:
+      192.168.29.252:
