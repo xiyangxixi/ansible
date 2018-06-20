@@ -1,0 +1,206 @@
+# copy file blockinfile lineinfile 模块
+
+
+# copy模块 将ansible主机的文件复制到远程主机
+
+# 复制文件到远程主机
+[root@ansible etc]# ansible pro1 -m copy -a "src=/data/192.168.29.250/etc/passwd dest=/data"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "dest": "/data/passwd", 
+    "gid": 0, 
+    "group": "root", 
+    "md5sum": "ac94a8bb7ebed4cfaa61b154a71098d9", 
+    "mode": "0644", 
+    "owner": "root", 
+    "size": 1032, 
+    "src": "~None/.ansible/tmp/ansible-tmp-1529501313.55-51868427873140/source", 
+    "state": "file", 
+    "uid": 0
+}
+
+# 在远程主机生成文件，并添加内容
+[root@ansible etc]# ansible pro1 -m copy -a 'content="aaaa" dest=/data/test'
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "checksum": "70c881d4a26984ddce795f6f71817c9cf4480e79", 
+    "dest": "/data/test", 
+    "gid": 0, 
+    "group": "root", 
+    "md5sum": "74b87337454200d4d33f80c4663dc5e5", 
+    "mode": "0644", 
+    "owner": "root", 
+    "size": 4, 
+    "src": "~None/.ansible/tmp/ansible-tmp-1529501423.34-117918450646152/source", 
+    "state": "file", 
+    "uid": 0
+}
+
+[root@ansible etc]# ansible pro1 -m copy -a "src=/data/192.168.29.250/etc/passwd dest=/data"
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "dest": "/data/passwd", 
+    "gid": 0, 
+    "group": "root", 
+    "mode": "0644", 
+    "owner": "root", 
+    "path": "/data/passwd", 
+    "size": 1032, 
+    "state": "file", 
+    "uid": 0
+}
+[root@ansible etc]# ansible pro1 -m copy -a "src=/data/192.168.29.250/etc/passwd dest=/data force=no"
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "dest": "/data", 
+    "src": "/data/192.168.29.250/etc/passwd"
+}
+[root@ansible etc]# ansible pro1 -m copy -a "src=/data/192.168.29.250/etc/passwd dest=/data force=yes"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "dest": "/data/passwd", 
+    "gid": 0, 
+    "group": "root", 
+    "md5sum": "ac94a8bb7ebed4cfaa61b154a71098d9", 
+    "mode": "0644", 
+    "owner": "root", 
+    "size": 1032, 
+    "src": "~None/.ansible/tmp/ansible-tmp-1529501583.8-17056284249011/source", 
+    "state": "file", 
+    "uid": 0
+}
+[root@ansible etc]# ansible pro1 -m copy -a "src=/data/192.168.29.250/etc/passwd dest=/data backup=yes"
+192.168.29.250 | SUCCESS => {
+    "backup_file": "/data/passwd.1819.2018-06-20@21:33:52~", 
+    "changed": true, 
+    "checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "dest": "/data/passwd", 
+    "gid": 0, 
+    "group": "root", 
+    "md5sum": "ac94a8bb7ebed4cfaa61b154a71098d9", 
+    "mode": "0644", 
+    "owner": "root", 
+    "size": 1032, 
+    "src": "~None/.ansible/tmp/ansible-tmp-1529501631.1-35192983758187/source", 
+    "state": "file", 
+    "uid": 0
+}
+
+
+
+# file模块 创建文件或者目录 删除文件或目录 更改权限等 group mode recurse
+
+[root@ansible etc]# ansible pro1 -m file -a "path=/data/test1 state=touch"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "dest": "/data/test1", 
+    "gid": 0, 
+    "group": "root", 
+    "mode": "0644", 
+    "owner": "root", 
+    "size": 0, 
+    "state": "file", 
+    "uid": 0
+}
+[root@ansible etc]# ansible pro1 -m file -a "path=/data/test2 state=directory"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "gid": 0, 
+    "group": "root", 
+    "mode": "0755", 
+    "owner": "root", 
+    "path": "/data/test2", 
+    "size": 4096, 
+    "state": "directory", 
+    "uid": 0
+}
+[root@ansible etc]# ansible pro1 -m file -a "path=/data/test2 state=absent"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "path": "/data/test2", 
+    "state": "absent"
+}
+[root@ansible etc]# ansible pro1 -m file -a "path=/data/test1 state=absent"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "path": "/data/test1", 
+    "state": "absent"
+}
+
+
+# blockfile模块 在指定文件中插入文本 backup state insertbefore insertafter marker create
+
+[root@ansible etc]# ansible pro1 -m blockinfile -a 'path=/data/test block="123456"'
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "msg": "Block inserted"
+}
+[root@ansible etc]# ansible pro1 -m blockinfile -a 'path=/data/test block="123456" marker="#{mark} huazai"'
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "msg": "Block inserted"
+}
+[root@ansible etc]# ansible pro1 -m blockinfile -a 'path=/data/test block="" marker="#{mark} huazai"'
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "msg": "Block removed"
+}
+[root@ansible etc]# ansible pro1 -m blockinfile -a 'path=/data/test  marker="#{mark} huazai" state=absent'
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "msg": ""
+}
+[root@ansible etc]# ansible pro1 -m blockinfile -a 'path=/data/test  marker="#{mark} BEGIN ANSIBLE MANAGED BLOCK" state=absent'
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "msg": ""
+}
+[root@ansible etc]# ansible pro1 -m blockinfile -a 'path=/data/test  marker="#{mark}BEGIN ANSIBLE MANAGED BLOCK" state=absent'
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "msg": ""
+}
+[root@ansible etc]# ansible pro1 -m blockinfile -a 'path=/data/test block="123456" marker="#{mark} huazai"'
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "msg": "Block inserted"
+}
+[root@ansible etc]# ansible pro1 -m blockinfile -a 'path=/data/test  marker="#{mark} huazai" state=absent'
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "msg": "Block removed"
+
+
+# lineinfile模块 确保文本存在文件中 可删除 可根据正则表达式更新 path line regexp state insertbefore insertafter backup create
+
+[root@ansible etc]# ansible pro1 -m lineinfile -a 'path=/data/test line="123456"'
+192.168.29.250 | SUCCESS => {
+    "backup": "", 
+    "changed": false, 
+    "msg": ""
+}
+[root@ansible etc]# ansible pro1 -m lineinfile -a 'path=/data/test regexp="^123456" line="123456"'
+192.168.29.250 | SUCCESS => {
+    "backup": "", 
+    "changed": false, 
+    "msg": ""
+}
+[root@ansible etc]# ansible pro1 -m lineinfile -a 'path=/data/test line="123456" state=absent'
+192.168.29.250 | SUCCESS => {
+    "backup": "", 
+    "changed": true, 
+    "found": 1, 
+    "msg": "1 line(s) removed"
+}
+[root@ansible etc]# ansible pro1 -m lineinfile -a 'path=/data/test regexp="123" state=absent'
+192.168.29.250 | SUCCESS => {
+    "backup": "", 
+    "changed": true, 
+    "found": 3, 
+    "msg": "3 line(s) removed"
+}
+
+
