@@ -1,0 +1,74 @@
+# 关于ansible模块的学
+
+# 查看ansible支持的模块
+ansible-doc -l
+
+# 查看ansible关于某个模块的使用方式
+ansible-doc -s ping
+ansible-doc -s fetch #从远程主机抓取文件到ansible主机
+
+# 抓取例子，抓取远程主机的/etc/passwd文件，返回颜色为黄色，表示执行了操作，如为绿色，表示未执行操作。
+[root@ansible data]# ansible pro1 -m fetch -a "src=/etc/passwd dest=/data/"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "dest": "/data/192.168.29.250/etc/passwd", 
+    "md5sum": "ac94a8bb7ebed4cfaa61b154a71098d9", 
+    "remote_checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "remote_md5sum": null
+}
+[root@ansible data]# ll
+total 20
+drwxr-xr-x  3 root root  4096 Jun 20 21:16 192.168.29.250
+drwxrwxr-x. 2  775 root 16384 Jun 20 08:49 lost+found
+[root@ansible data]# cd 192.168.29.250/etc/
+[root@ansible etc]# ll
+total 4
+-rw-r--r-- 1 root root 1032 Jun 20 21:16 passwd
+
+# 再次进行抓取
+[root@ansible etc]# ansible pro1 -m fetch -a "src=/etc/passwd dest=/data/"
+192.168.29.250 | SUCCESS => {
+    "changed": false, # 为false，说明未改变。
+    "checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "dest": "/data/192.168.29.250/etc/passwd", 
+    "file": "/etc/passwd", 
+    "md5sum": "ac94a8bb7ebed4cfaa61b154a71098d9"
+}
+# 改变拉取过来的文件，在进行拉取，则返回为黄色，说明替换了文件
+[root@ansible etc]# echo "123456" >>passwd 
+[root@ansible etc]# ansible pro1 -m fetch -a "src=/etc/passwd dest=/data/"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "dest": "/data/192.168.29.250/etc/passwd", 
+    "md5sum": "ac94a8bb7ebed4cfaa61b154a71098d9", 
+    "remote_checksum": "08eeea45dcdaf70b01768681b19992a5fad122ac", 
+    "remote_md5sum": null
+}
+[root@ansible etc]# cat passwd 
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:99:99:Nobody:/:/sbin/nologin
+systemd-bus-proxy:x:999:997:systemd Bus Proxy:/:/sbin/nologin
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:996:User for polkitd:/:/sbin/nologin
+tss:x:59:59:Account used by the trousers package to sandbox the tcsd daemon:/dev/null:/sbin/nologin
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+jenkins:x:997:995:Jenkins Automation Server:/var/lib/jenkins:/bin/false
+
+# 并没有刚才添加的“123456”
+
+
