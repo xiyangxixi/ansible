@@ -1,0 +1,29 @@
+# 命令类模块 command shell script 
+
+# command模块 在远程主机上执行命令 free_form chdir creates removes
+
+[root@ansible ~]# ansible pro1 -m command -a "chdir=/data ls"
+192.168.29.250 | SUCCESS | rc=0 >>
+jdk-8u91-linux-x64.rpm
+jenkins-2.121.1-1.1.noarch.rpm
+passwd
+test
+
+[root@ansible ~]# ansible pro1 -m command -a "creates=/data/passwd echo test"
+192.168.29.250 | SUCCESS | rc=0 >>
+skipped, since /data/passwd exists
+
+[root@ansible ~]# ansible pro1 -m command -a "removes=/data/passwd echo test"
+192.168.29.250 | SUCCESS | rc=0 >>
+test
+
+# shell模块 free_form chdir creates removes executable
+
+[root@ansible ~]# ansible pro1 -m shell -a "chdir=/data echo 123456 >>test"
+192.168.29.250 | SUCCESS | rc=0 >>
+
+# script模块 free_form chdir creates removes
+
+# 与command类似 command不支持一些管道符号
+
+
