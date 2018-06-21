@@ -1,0 +1,17 @@
+# 系统类模块 cron 管理远程主机的计划任务 minute hour day month weekday special_time user job name state disabled backup
+
+# service模块 可以启停远程服务器上的服务 name state enabled(开机自启动)
+
+[root@ansible ~]# ansible pro1 -m service -a "name=jenkins state=started"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "name": "jenkins", 
+    "state": "started", 
+    "status": {
+
+[root@ansible ~]# ansible pro1 -m service -a "name=jenkins state=stopped"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "name": "jenkins", 
+    "state": "stopped", 
+    "status": {
