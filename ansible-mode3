@@ -1,0 +1,19 @@
+# find replace模块
+
+
+# find模块 用于查找文件 paths recurse hidden file_type patterns contains size age age_stamp
+
+参考：http://www.zsythink.net/archives/2560
+
+
+# replace模块 替换文件 path regexp replace backup
+
+
+[root@ansible ~]# ansible pro1 -m replace -a 'path=/data/passwd regexp="995" replace=994'
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "msg": "1 replacements made"
+}
+
+
+
