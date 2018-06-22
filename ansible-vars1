@@ -1,0 +1,60 @@
+# 在ansible中使用变量 利用vars定义 利用{{变量名}}进行调用 如果变量不是出于开头的位置 一般情况下不用加引号 一旦出于开头位置 则必须使用引号
+# 也可以将需要定义的变量放在一个yaml文件中 在playbook中进行调用 如下所示 且可以调用多个
+vars_files:
+- /xxxx/xxxx/xxx/xxx.yml
+- /xxxx/xxxx/xxx/xxx.yml
+- /xxxx/xxxx/xxx/xxx.yml
+
+# vars与vars_files可以同时使用
+
+cat test.yml
+---
+- hosts: pro1
+  vars:
+    test1: huazai
+  remote_user: root
+  tasks:
+  - name: ping the remote server
+    ping:
+  - name: touche file
+    file:
+      path: /data/{{ test1 }}
+      state: touch
+# 定义多个
+
+vars:
+  test1: test1
+  test2: test2
+
+# 另一种方式
+vars:
+  - test1: test1
+  - test2: test2
+
+# 类似属性方式定义变量
+[root@ansible data]# cat huahua.yml 
+---
+- hosts: pro1
+  remote_user: root
+  vars:
+    nginx:
+      conf80: /etc/nginx/80.conf
+      conf8080: /etc/nginx/8080.conf
+  tasks:
+  - name: task1
+    file:
+      path: "{{ nginx.conf80 }}"
+      state: touch
+  - name: task2
+    file:
+      path: "{{ nginx.conf8080 }}" # 还可以换种方式调用 "{{nginx['conf8080']}}"
+      state: touch
+
+
+
+
+
+
+
+
+
