@@ -1,0 +1,71 @@
+# ansible playbook
+
+# 安装httpd
+
+[root@ansible ~]# ansible pro1 -m yum -a 'name=httpd disable_gpg_check=yes enablerepo=mnt'
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "msg": "file:///mnt/repodata/repomd.xml: [Errno 14] curl#37 - \"Couldn't open file /mnt/repodata/repomd.xml\"\nTrying other mirror.\n", 
+    "rc": 0, 
+    "results": [
+
+[root@ansible ~]# ansible pro1 -m service -a "name=httpd state=started"
+192.168.29.250 | SUCCESS => {
+    "changed": true, 
+    "name": "httpd", 
+    "state": "started", 
+    "status": {
+
+[root@ansible data]# vim test.yml
+[root@ansible data]# ansible-playbook test.yml 
+
+PLAY [pro1] ***********************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************************************************
+ok: [192.168.29.250]
+
+TASK [ping the remote server] *****************************************************************************************************************************************************************
+ok: [192.168.29.250]
+
+TASK [touche file] ****************************************************************************************************************************************************************************
+changed: [192.168.29.250]
+
+PLAY RECAP ************************************************************************************************************************************************************************************
+192.168.29.250             : ok=3    changed=1    unreachable=0    failed=0 
+
+cat test.yml
+---
+- hosts: pro1
+  remote_user: root
+  tasks:
+  - name: ping the remote server
+    ping:
+  - name: touche file
+    file:
+      path: /data/huazai
+      state: touch
+# 检查语法错误
+[root@ansible data]# ansible-playbook --syntax-check test.yml 
+
+playbook: test.yml
+
+# 模拟执行
+[root@ansible data]# ansible-playbook --check test.yml 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
