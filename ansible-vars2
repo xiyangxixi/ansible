@@ -1,0 +1,99 @@
+# ansible变量 借助 setup模块 返回远程主机的相关信息 debug模块 帮助进行调试(msg var)
+
+[root@ansible data]# ansible pro1 -m setup
+
+
+[root@ansible data]# ansible pro1 -m setup -a 'filter=ansible_memory_mb'
+192.168.29.250 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_memory_mb": {
+            "nocache": {
+                "free": 1678, 
+                "used": 306
+            }, 
+            "real": {
+                "free": 1350, 
+                "total": 1984, 
+                "used": 634
+            }, 
+            "swap": {
+                "cached": 0, 
+                "free": 4095, 
+                "total": 4095, 
+                "used": 0
+            }
+        }
+    }, 
+    "changed": false
+}
+
+[root@ansible data]# ansible pro1 -m setup -a 'filter=ansible_*_mb'
+192.168.29.250 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_memfree_mb": 1349, 
+        "ansible_memory_mb": {
+            "nocache": {
+                "free": 1677, 
+                "used": 307
+            }, 
+            "real": {
+                "free": 1349, 
+                "total": 1984, 
+                "used": 635
+            }, 
+            "swap": {
+                "cached": 0, 
+                "free": 4095, 
+                "total": 4095, 
+                "used": 0
+            }
+        }, 
+        "ansible_memtotal_mb": 1984, 
+        "ansible_swapfree_mb": 4095, 
+        "ansible_swaptotal_mb": 4095
+    }, 
+    "changed": false
+}
+
+# 因为在执行playbook时  会先去收集远程主机信息，返回的是json类型 而且是保存在本地的 所以可以直接调用
+[root@ansible data]# ansible-playbook memory.yml 
+
+PLAY [pro1] ***********************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************************************************
+ok: [192.168.29.250]
+
+TASK [debug demo] *****************************************************************************************************************************************************************************
+ok: [192.168.29.250] => {
+    "msg": "xxxxx: {u'real': {u'total': 1984, u'free': 1349, u'used': 635}, u'swap': {u'cached': 0, u'total': 4095, u'used': 0, u'free': 4095}, u'nocache': {u'used': 307, u'free': 1677}}"
+}
+
+PLAY RECAP ************************************************************************************************************************************************************************************
+192.168.29.250             : ok=2    changed=0    unreachable=0    failed=0   
+
+
+[root@ansible data]# cat memory.yml 
+---
+- hosts: pro1
+  remote_user: root
+  tasks:
+  - name: debug demo
+    debug:
+      msg: "xxxxx: {{ ansible_memory_mb }}"
+[root@ansible data]# vim memory.yml 
+[root@ansible data]# cat memory.yml 
+---
+- hosts: pro1
+  remote_user: root
+  tasks:
+  - name: debug demo
+    debug:
+      msg: "xxxxx: {{ ansible_memory_mb.real }}"
+
+
+
+
+
+
+
+
