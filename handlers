@@ -1,5 +1,26 @@
-# handlers 一种任务列表 指明要做哪些任务 当task任务被真正执行后，handlers才会被执行
+# handlers 一种任务列表 指明要做哪些任务 当task任务被真正执行后，handlers才会被执行 一般情况下 会先执行tasks，执行完成之后才会执行各个handlers，
+# 如果需要先执行某些handlers,可以使用meta  -meta: flush_handlers 如果需要同时通知到多个handlers，可以使用notify: handler group1
+# 在handlers中使用listen: handler group1
 
+# 修改httpd的端口，并启动
 
+[root@ansible data]# cat httpd.yml 
+---
+- hosts: pro1
+  remote_user: root
+  tasks:
+  - name: modify port
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: "Listen 80"
+      line: "Listen 81"
+    notify:
+      restart httpd
+  handlers:
+  - name: restart httpd
+    service:
+      name: httpd
+      state: restarted
+[root@ansible data]# 
 
 
