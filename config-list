@@ -30,3 +30,22 @@ all:
     pro2:
      hosts:
       192.168.29.252:
+
+# 下面这种方式也是可以的
+
+[mftp-web-api]
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
+
+[mftp-redis-rabbitmq]
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
+
+[mftp-mysql]
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
+
+[mftp-nginx]
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
+ip ansible_ssh_user=app ansible_ssh_pass=xxxxxxxx ansible_sudo_pass=xxxxxxxx
