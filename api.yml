@@ -1,0 +1,59 @@
+# 示例
+
+- hosts: 192.168.37.34
+  vars:
+    testIP: 172.19.2.1
+    testhome: /home/app/api-tomcat/webapps
+    warname: api.war
+    oldhome: /home/app/api-tomcat
+    backupwebapps: /home/app/tomcat.bak
+    newwar: /home/app/newwar
+    webinf: api/WEB-INF/classes
+    appclass: application.properties
+    zipname: api
+  remote_user: app
+  tasks:
+    - name: 删除/home/app/newwar目录
+      file: path={{ newwar }} state=absent
+      ignore_errors: yes
+    - name: 创建/home/app/newwar目录.改权限
+      file: path={{ newwar }} recurse=yes mode=775 owner=app group=app state=directory
+    - name: 从测试环境复制war包到/home/app/newwar目录
+      shell: scp app@{{ testIP }}:{{ testhome }}/{{ warname }} {{ newwar }}
+    - name: 给/home/app/newwar递归改权限
+      file: dest={{ newwar}} recurse=yes mode=775 owner=app group=app
+    - name: 解压/home/app/newwar目录内的war包在本目录内
+      shell: unzip -oq {{ newwar }}/{{ warname }} -d {{ newwar }}/{{ zipname }}
+    - name: 再次给/home/app/newwar递归改权限
+      file: dest={{ newwar}} recurse=yes mode=775 owner=app group=app
+    - name: 创建备份webapps目录/home/app/tomcat.bak/api并改权限
+      file: path={{ backupwebapps }}/{{ zipname }} recurse=yes mode=775 owner=app group=app state=directory
+    - name: 备份webapps到目录/home/app/tomcat.bak/api下并加上时间戳
+      shell: cp -a {{ oldhome }}/webapps {{ backupwebapps }}/{{ zipname }}/webapps-`date +%Y%m%d%H%M`
+    - name: /home/app/api-tomcat/bin/catalina.sh方式停止服务
+      shell: "{{ oldhome }}/bin/catalina.sh stop"
+      ignore_errors: yes
+    - name: kill进程方式停止服务.忽略错误返回值
+      shell: ps -ef | grep {{ oldhome }} | grep -v grep | awk '{print $2}'| xargs kill -9
+      ignore_errors: yes
+    - name: 再次kill进程方式停止服务.忽略错误返回值
+      shell: ps -ef | grep {{ oldhome }} | grep -v grep | awk '{print $2}'| xargs kill -9
+      ignore_errors: yes
+    - name: 查看停止服务的结果.进程是否还在
+      shell: ps -ef | grep {{ oldhome }}
+    - name: 删除原来的/home/app/api-tomcat/webapps/api.war包
+      file: path={{ oldhome }}/webapps/{{ warname }} state=absent
+      ignore_errors: yes
+    - name: 删除原来的/home/app/api-tomcat/webapps/api目录
+      file: path={{ oldhome }}/webapps/{{ zipname }} state=absent
+      ignore_errors: yes
+    - name: 复制新版本/home/app/newwar/api目录到/home/app/api-tomcat/webapps/目录下
+      shell: cp -a {{ newwar }}/{{ zipname }} {{ oldhome }}/webapps/
+    - name: 复制老版本项目配置文件到新版本中
+      shell: cp -a {{ backupwebapps }}/{{ zipname }}/$(ls -r {{ backupwebapps }}/{{ zipname }} | head -1)/{{ webinf }}/{{ appclass }} {{ oldhome }}/webapps/{{ webinf }}
+    - name: 复制新版本/home/app/newwar/api.war到/home/app/api-tomcat/webapps/目录下
+      shell: cp -a {{ newwar }}/{{ warname }} {{ oldhome }}/webapps/
+    - name: 启动服务
+      shell: "source /etc/profile;nohup {{ oldhome }}/bin/startup.sh &"
+    - name: 查看进程中是否存在启动的服务
+      shell: ps -ef | grep {{ oldhome }}
