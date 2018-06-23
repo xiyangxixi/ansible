@@ -1,0 +1,27 @@
+# 部署tomcat的yaml文件 需改进
+---
+- hosts: pro1
+  vars:
+    local_home: /data
+    bag_name: apache-tomcat-8.0.45.tar.gz
+    remote_home: /data
+  remote_user: root
+  tasks:
+    - name: 停止远端服务
+      shell: kill -9 `lsof -n -P -t -i:8181`
+    - name: 创建文件夹
+      file: dest=/data/backup state=directory
+    - name: 备份文件
+      shell: cd /data;mv apache-tomcat-8.0.45 /data/backup/apache-tomcat-8.0.45_`date +%Y%m%d%H%M%S`
+    - name: 复制包到远端
+      copy: src={{ local_home }}/{{ bag_name }} dest={{ remote_home }}
+    - name: 解压包
+      shell: cd /data;tar -zxvf {{ remote_home }}/{{ bag_name }}
+    - name: 删除压缩包
+      file: dest=/data/apache-tomcat-8.0.45.tar.gz state=absent
+    - name: 修改端口
+      shell: cd /data/apache-tomcat-8.0.45/conf;sed -i 's/8080/8181/g' server.xml
+    - name: 启动服务
+      shell: cd /data/apache-tomcat-8.0.45/bin;nohup ./startup.sh &
+    - name: 检查端口是否在监听状态
+      shell: ps -ef |grep /data/apache-tomcat-8.0.45
