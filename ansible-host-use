@@ -1,0 +1,47 @@
+# ansible关于引用hosts文件时的一些特殊用法
+
+# ping 两台机器
+
+[root@ansible data]# ansible "pro1:pro2" -m ping
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+192.168.29.252 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+[root@ansible data]# ansible "192.168.29.252:192.168.29.250" -m ping
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+192.168.29.252 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+
+# ping 所有机器
+
+[root@ansible data]# ansible all -m ping
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+192.168.29.252 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+[root@ansible data]# ansible "*" -m ping
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+192.168.29.252 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+
+
+
+
