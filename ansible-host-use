@@ -42,6 +42,11 @@
     "ping": "pong"
 }
 
+[root@ansible data]# ansible 192.168.29.* -m ping
+192.168.29.250 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
 
 
 
