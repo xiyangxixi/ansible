@@ -1,0 +1,10 @@
+# 关于ansible中右箭头>的用法
+
+[root@ansible data]# cat youjiantou.yml 
+---
+- hosts: pro1
+  remote_user: root
+  tasks:
+    - name: 执行shell
+      shell: >
+         touch /data/huahua1
