@@ -1,0 +1,18 @@
+# ansible中git的使用
+
+[root@ansible data]# cat git.yaml 
+---
+- hosts: pro2
+  remote_user: root
+  tasks:
+    - name: git测试
+      git:
+        repo: https://github.com/xiyangxixi/ansible.git
+        #version: test1.0
+        dest: /data/ansible.git
+[root@ansible data]# ll
+total 589960
+drwxr-xr-x  3 root root      4096 Jun 20 21:16 192.168.29.250
+drwxr-xr-x  3 root root      4096 Jun 25 21:32 ansible.git
+-rw-r--r--  1 root root        15 Jun 25 21:32 git.retry
+-rw-r--r--  1 root root       194 Jun 25 21:33 git.yaml
