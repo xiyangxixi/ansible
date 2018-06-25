@@ -1,0 +1,14 @@
+# 当有很多个同样操作的时候 可以将参数放在一起 即使用with-items
+
+[root@ansible data]# cat items.yml 
+---
+- hosts: pro1
+  remote_user: root
+  tasks:
+    - name: 测试
+      file: path="/data/{{item}}" state=touch
+      with_items:
+        - hua1
+        - hua2
+        - hua3
+  
