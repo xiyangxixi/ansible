@@ -39,3 +39,16 @@ changed: [192.168.29.250] => {"changed": true, "cmd": "cd data_dir;ls", "delta":
 
 PLAY RECAP ************************************************************************************************************************************************************************************
 192.168.29.250             : ok=2    changed=1    unreachable=0    failed=0   
+
+[root@ansible data]# cat  direc.yaml 
+---
+- hosts: pro1
+  vars:
+    remote_backup_dir: /data/backup
+  remote_user: root
+  tasks:
+    - name: 创建备份文件架
+      file: 
+        path: "{{remote_backup_dir}}"
+        state: directory
+
