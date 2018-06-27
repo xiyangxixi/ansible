@@ -21,3 +21,82 @@
     - { name: 'testuser1', groups: 'wheel' }
     - { name: 'testuser2', groups: 'root' }
 
+# 嵌套循环
+
+- name: give users access to multiple databases
+  mysql_user: name={{ item[0] }} priv={{ item[1] }}.*:ALL append_privs=yes password=foo
+  with_nested:
+    - [ 'alice', 'bob' ]
+    - [ 'clientdb', 'employeedb', 'providerdb' ]
+# 预定义变量
+
+- name: here, 'users' contains the above list of employees
+  mysql_user: name={{ item[0] }} priv={{ item[1] }}.*:ALL append_privs=yes password=foo
+  with_nested:
+    - "{{users}}"
+    - [ 'clientdb', 'employeedb', 'providerdb' ]
+    
+ # 文件列表循环
+ 
+ [root@ansible data]# cat with_fileglob.yaml
+---
+- hosts: pro1
+  remote_user: root
+  tasks:
+    - name: 测试with_fileglob
+      file: dest=/data/fileglob state=directory
+    - name: copy文件
+      copy: src={{item}} dest=/data/fileglob/ owner=root mode=775
+      with_fileglob:
+        - /etc/*
+[root@ansible data]# ansible-playbook with_fileglob.yaml
+
+PLAY [pro1] *********************************************************************************************************************
+
+TASK [Gathering Facts] **********************************************************************************************************
+ok: [192.168.29.250]
+
+TASK [测试with_fileglob] **********************************************************************************************************
+ok: [192.168.29.250]
+
+TASK [copy文件] *******************************************************************************************************************
+changed: [192.168.29.250] => (item=/etc/auto.master)
+changed: [192.168.29.250] => (item=/etc/my.cnf)
+changed: [192.168.29.250] => (item=/etc/usb_modeswitch.conf)
+changed: [192.168.29.250] => (item=/etc/DIR_COLORS)
+changed: [192.168.29.250] => (item=/etc/man_db.conf)
+changed: [192.168.29.250] => (item=/etc/brltty.conf)
+changed: [192.168.29.250] => (item=/etc/shells)
+changed: [192.168.29.250] => (item=/etc/dleyna-server-service.conf)
+changed: [192.168.29.250] => (item=/etc/nanorc)
+changed: [192.168.29.250] => (item=/etc/pinforc)
+changed: [192.168.29.250] => (item=/etc/ntp.conf)
+changed: [192.168.29.250] => (item=/etc/favicon.png)
+changed: [192.168.29.250] => (item=/etc/cgconfig.conf)
+changed: [192.168.29.250] => (item=/etc/fprintd.conf)
+
+# 整数循环
+
+[root@ansible data]# cat zhengshu.yaml
+---
+- hosts: pro1
+  remote_user: root
+  tasks:
+    - name: 创建组
+      group: name=group{{item}} state=present
+      with_sequence: count=4
+[root@ansible data]# ansible-playbook zhengshu.yaml
+
+PLAY [pro1] *********************************************************************************************************************
+
+TASK [Gathering Facts] **********************************************************************************************************
+ok: [192.168.29.250]
+
+TASK [创建组] **********************************************************************************************************************
+changed: [192.168.29.250] => (item=1)
+changed: [192.168.29.250] => (item=2)
+changed: [192.168.29.250] => (item=3)
+changed: [192.168.29.250] => (item=4)
+
+PLAY RECAP **********************************************************************************************************************
+192.168.29.250             : ok=2    changed=1    unreachable=0    failed=0
