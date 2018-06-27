@@ -1,5 +1,6 @@
 # 当有很多个同样操作的时候 可以将参数放在一起 即使用with-items
 
+# 标准循环
 [root@ansible data]# cat items.yml 
 ---
 - hosts: pro1
@@ -12,3 +13,11 @@
         - hua2
         - hua3
   
+# 哈希列表
+
+- name: add several users
+  user: name={{ item.name }} state=present groups={{ item.groups }}
+  with_items:
+    - { name: 'testuser1', groups: 'wheel' }
+    - { name: 'testuser2', groups: 'root' }
+
