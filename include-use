@@ -1,0 +1,35 @@
+# ansible中include的用法 playbook和handlers都可以使用include
+# tasks.yaml
+[root@ansible data]# cat tasks.yaml
+---
+- name: 检查文件
+  shell: cd /data;ls -al
+- name:
+  shell: cd /etc; ls -al
+# task-test.yaml
+[root@ansible data]# cat task-test.yaml
+---
+- hosts: pro1
+  tasks:
+    - include: tasks.yaml
+# 执行Playbook
+[root@ansible data]# ansible-playbook task-test.yaml
+
+PLAY [pro1] **************************************************************************************************************
+
+TASK [Gathering Facts] ***************************************************************************************************
+ok: [192.168.29.250]
+ok: [192.168.29.252]
+
+TASK [检查文件] **************************************************************************************************************
+changed: [192.168.29.250]
+changed: [192.168.29.252]
+
+TASK [shell] *************************************************************************************************************
+changed: [192.168.29.250]
+changed: [192.168.29.252]
+
+PLAY RECAP ***************************************************************************************************************
+192.168.29.250             : ok=3    changed=2    unreachable=0    failed=0
+192.168.29.252             : ok=3    changed=2    unreachable=0    failed=0
+
