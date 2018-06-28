@@ -1,0 +1,4 @@
+---
+- hosts: pro2
+  roles: 
+    - webserver
