@@ -1,0 +1,8 @@
+- name: install httpd package
+  yum: name=httpd
+- name: install configuration file
+  copy: src=httpd.conf dest=/etc/httpd/conf
+  tags: conf
+  notify: restart httpd
+- name: start httpd
+  service: name=httpd state=restarted
