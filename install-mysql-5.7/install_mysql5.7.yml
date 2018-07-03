@@ -1,0 +1,43 @@
+---
+- hosts: pro4
+  vars:
+    remote_mysql_dir: /usr/local
+    mysqld_log_dir: /var/log
+    mysqld_pid_dir: /var/run/mysqld
+    mysqld_pid: /var/run/mysqld/msyqld.pid
+    mysqld_start_service: /usr/local/mysql/support-files
+    mysql_user: mysql
+    mysql_group: mysql
+    mysql_mysqld_dir: /usr/local/mysql/bin
+    mysql_data_dir: /usr/local/mysql/data
+    mysql_base_dir: /usr/local/mysql
+  remote_user: root
+  tasks:
+    - name: 复制文件到远端服务器
+      copy: src=/data/mysql-5.7.21-linux-glibc2.12-x86_64.tar.gz dest={{remote_mysql_dir}}
+    - name: 解压远端压缩包
+      shell: cd {{remote_mysql_dir}}; tar -zxvf mysql-5.7.21-linux-glibc2.12-x86_64.tar.gz
+    - name: 更改包名
+      shell: cd {{remote_mysql_dir}}; mv mysql-5.7.21-linux-glibc2.12-x86_64 mysql
+    - name: 创建mysql用户和组
+      shell: cd {{remote_mysql_dir}};groupadd mysql; useradd -r -g mysql mysql; chown -R mysql:mysql mysql/
+    - name: 复制my.cnf
+      copy: src=/data/my.cnf dest=/etc
+    - name: 安装依赖
+      shell: yum -y install libaio
+    - name: 编辑mysqld.log文件
+      file: path={{mysqld_log_dir}}/mysqld.log state=touch mode=777 owner=mysql group=mysql
+    - name: 初始化数据库
+      shell: "{{ mysql_mysqld_dir }}/mysqld --initialize --user={{mysql_user}} --basedir={{mysql_base_dir}} --datadir={{mysql_data_dir}}"
+    - name: 创建mysqld.pid相关文件夹
+      file: path={{mysqld_pid_dir}} state=directory owner=mysql group=mysql mode=777
+    - name: 创建mysqld.pid文件
+      file: path={{mysqld_pid}} state=touch owner=mysql group=mysql mode=777
+    - name: 启动mysql服务
+      shell: "{{ mysqld_start_service }}/mysql.server restart"
+    #- name: 登陆并修改密码
+     # copy: src=/data/update_mysql_passwd.sh dest={{mysql_base_dir}} owner=root group=root mode=757
+    #- name: 执行改密码
+      #shell: cd {{mysql_base_dir}};./update_mysql_passwd.sh
+    - name: 检查安装结果
+      shell: ss -tnl; ps -ef |grep {{mysql_base_dir}}
