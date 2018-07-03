@@ -1,0 +1,4 @@
+# ansible角色 /etc/ansible/roles
+
+cd /etc/ansible/roles
+mkdir -pv roles/{nginx,keepalived}/{handlers,vars,templates,vars,tasks,files}
