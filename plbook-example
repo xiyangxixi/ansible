@@ -1,0 +1,13 @@
+---
+- hosts:
+    - 192.168.40.201
+    - 192.168.40.202
+  remote_user: root
+  tasks:
+  - name: ping the remote server
+    ping:
+  - name: touche file
+    file:
+      path: /data/huazai
+      state: directory
+#      recurse: yes
