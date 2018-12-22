@@ -1,0 +1,45 @@
+---
+- hosts: test
+  vars:
+    user: test
+    group: test
+ # vars_files:
+  #  - vars.yaml
+  remote_user: root
+  tasks:
+  - name: install apache
+    yum:
+      name: httpd
+      state: latest
+  - name: create user test
+    user:
+      name: "{{ user }}"
+      uid: 1002
+      group: "{{ group }}"
+  - name: create directory
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+      - /test1
+      - /test1/test2
+      - /test1/test2/test3
+    notify: service httpd start
+  - name: copy files
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+    with_items:
+      - src: "./test1.txt"
+        dest: "/tmp"
+      - src: "./test2.txt"
+        dest: "/tmp1"
+  - name: execute command
+    command: >
+      mkdir -pv /data/{test1,test2,tes43} 
+  handlers:
+  - name: service httpd start
+    service:
+      name: httpd
+      state: restarted
+

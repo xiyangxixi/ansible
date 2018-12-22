@@ -1,0 +1,12 @@
+---
+- hosts: test
+  remote_user: root
+  vars:
+    xxx: xxxx
+    xxx: xxxx
+  vars_files:
+    - vars.yaml
+  tasks:
+  - block:
+    - name:
+    - name:

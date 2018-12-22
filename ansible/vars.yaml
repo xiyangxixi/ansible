@@ -1,0 +1,6 @@
+---
+download_dir: /tmp
+tomcat_version: 8.0.35
+tomcat_dir: /opt/tomcat
+solr_dir: /opt/solr
+solr_version: 6.1.0
